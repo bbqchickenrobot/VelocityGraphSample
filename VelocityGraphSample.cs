@@ -57,65 +57,65 @@ namespace VelocityGraphSample
         // Add some MOVIE nodes
 
         Vertex mLostInTranslation = g.NewVertex(movieType);
-        g.SetProperty(mLostInTranslation, movieIdType, (long) 1);
-        g.SetProperty(mLostInTranslation, movieTitleType, "Lost in Translation");
-        g.SetProperty(mLostInTranslation, movieYearType, (int) 2003);
+        mLostInTranslation.SetProperty(movieIdType, (long)1);
+        mLostInTranslation.SetProperty(movieTitleType, "Lost in Translation");
+        mLostInTranslation.SetProperty(movieYearType, (int) 2003);
 
         Vertex mVickyCB = g.NewVertex(movieType);
-        g.SetProperty(mVickyCB, movieIdType, (long) 2);
-        g.SetProperty(mVickyCB, movieTitleType, "Vicky Cristina Barcelona");
-        g.SetProperty(mVickyCB, movieYearType, (int) 2008);
+        mVickyCB.SetProperty(movieIdType, (long) 2);
+        mVickyCB.SetProperty(movieTitleType, "Vicky Cristina Barcelona");
+        mVickyCB.SetProperty(movieYearType, (int)2008);
 
         Vertex mManhattan = g.NewVertex(movieType);
-        g.SetProperty(mManhattan, movieIdType, (long) 3);
-        g.SetProperty(mManhattan, movieTitleType, "Manhattan");
-        g.SetProperty(mManhattan, movieYearType, (int) 1979);
+        mManhattan.SetProperty(movieIdType, (long) 3);
+        mManhattan.SetProperty(movieTitleType, "Manhattan");
+        mManhattan.SetProperty(movieYearType, (int) 1979);
 
 
         // Add some PEOPLE nodes
         Vertex pScarlett = g.NewVertex(peopleType);
-        g.SetProperty(pScarlett, peopleIdType, (long) 1);
-        g.SetProperty(pScarlett, peopleNameType, "Scarlett Johansson");
+        pScarlett.SetProperty(peopleIdType, (long)1);
+        pScarlett.SetProperty(peopleNameType, "Scarlett Johansson");
 
         Vertex pBill = g.NewVertex(peopleType);
-        g.SetProperty(pBill, peopleIdType, (long) 2);
-        g.SetProperty(pBill, peopleNameType, "Bill Murray");
+        pBill.SetProperty(peopleIdType, (long) 2);
+        pBill.SetProperty(peopleNameType, "Bill Murray");
 
         Vertex pSofia = g.NewVertex(peopleType);
-        g.SetProperty(pSofia, peopleIdType, (long) 3);
-        g.SetProperty(pSofia, peopleNameType, "Sofia Coppola");
+        pSofia.SetProperty(peopleIdType, (long)3);
+        pSofia.SetProperty(peopleNameType, "Sofia Coppola");
 
         Vertex pWoody = g.NewVertex(peopleType);
-        g.SetProperty(pWoody, peopleIdType, (long) 4);
-        g.SetProperty(pWoody, peopleNameType, "Woody Allen");
+        pWoody.SetProperty(peopleIdType, (long)4);
+        pWoody.SetProperty(peopleNameType, "Woody Allen");
 
         Vertex pPenelope = g.NewVertex(peopleType);
-        g.SetProperty(pPenelope, peopleIdType, (long) 5);
-        g.SetProperty(pPenelope, peopleNameType, "Penélope Cruz");
+        pPenelope.SetProperty(peopleIdType, (long) 5);
+        pPenelope.SetProperty(peopleNameType, "Penélope Cruz");
 
         Vertex pDiane = g.NewVertex(peopleType);
-        g.SetProperty(pDiane, peopleIdType, (long) 6);
-        g.SetProperty(pDiane, peopleNameType, "Diane Keaton");
+        pDiane.SetProperty(peopleIdType, (long)6);
+        pDiane.SetProperty(peopleNameType, "Diane Keaton");
 
         // Add some CAST edges
         Edge anEdge;
         anEdge = g.NewEdge(castType, mLostInTranslation, pScarlett);
-        g.SetProperty(anEdge, castCharacterType, "Charlotte");
+        anEdge.SetProperty(castCharacterType, "Charlotte");
 
         anEdge = g.NewEdge(castType, mLostInTranslation, pBill);
-        g.SetProperty(anEdge, castCharacterType, "Bob Harris");
+        anEdge.SetProperty(castCharacterType, "Bob Harris");
 
         anEdge = g.NewEdge(castType, mVickyCB, pScarlett);
-        g.SetProperty(anEdge, castCharacterType, "Cristina");
+        anEdge.SetProperty(castCharacterType, "Cristina");
 
         anEdge = g.NewEdge(castType, mVickyCB, pPenelope);
-        g.SetProperty(anEdge, castCharacterType, "Maria Elena");
+        anEdge.SetProperty(castCharacterType, "Maria Elena");
 
         anEdge = g.NewEdge(castType, mManhattan, pDiane);
-        g.SetProperty(anEdge, castCharacterType, "Mary");
+        anEdge.SetProperty(castCharacterType, "Mary");
 
         anEdge = g.NewEdge(castType, mManhattan, pWoody);
-        g.SetProperty(anEdge, castCharacterType, "Isaac");
+        anEdge.SetProperty(castCharacterType, "Isaac");
 
         // Add some DIRECTS edges
         anEdge = g.NewEdge(directsType, pSofia, mLostInTranslation);
@@ -124,13 +124,13 @@ namespace VelocityGraphSample
 
     // QUERIES
         // Get the movies directed by Woody Allen
-        Vertexes directedByWoody = g.Neighbors(pWoody, directsType, EdgesDirection.Outgoing);
+        Vertexes directedByWoody = pWoody.Neighbors(directsType, EdgesDirection.Outgoing);
 
         // Get the cast of the movies directed by Woody Allen
         Vertexes castDirectedByWoody = g.Neighbors(directedByWoody, castType, EdgesDirection.Any);
 
         // Get the movies directed by Sofia Coppola
-        Vertexes directedBySofia = g.Neighbors(pSofia, directsType, EdgesDirection.Outgoing);
+        Vertexes directedBySofia = pSofia.Neighbors(directsType, EdgesDirection.Outgoing);
 
         // Get the cast of the movies directed by Sofia Coppola
         Vertexes castDirectedBySofia = g.Neighbors(directedBySofia, castType, EdgesDirection.Any);
@@ -139,9 +139,9 @@ namespace VelocityGraphSample
         IEnumerable<Vertex> castFromBoth = castDirectedByWoody.Intersect(castDirectedBySofia);
 
         // Say hello to the people found
-        foreach (Vertex peopleOid in castFromBoth)
+        foreach (Vertex person in castFromBoth)
         {
-          object value = g.GetProperty(peopleOid, peopleNameType);
+          object value = person.GetProperty(peopleNameType);
           System.Console.WriteLine("Hello " + value);
         }
         graphId = session.Persist(g);
