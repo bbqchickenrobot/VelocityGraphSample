@@ -9,15 +9,9 @@ using System.IO;
 using System.Linq;
 using VelocityDb.Session;
 using VelocityGraph;
-using PropertyTypeId = System.Int32;
-using PropertyId = System.Int32;
-using VertexTypeId = System.Int32;
-using EdgeTypeId = System.Int32;
 
 namespace VelocityGraphSample
 {
-  using Vertexes = System.Collections.Generic.HashSet<Vertex>;
-  using Edges = System.Collections.Generic.HashSet<Edge>;
   using System.Collections.Generic;
   class VelocityGraphSample
   {
@@ -36,22 +30,22 @@ namespace VelocityGraphSample
 
     // SCHEMA
         // Add a node type for the movies, with a unique identifier and two indexed Propertys
-        VertexTypeId movieType = g.NewVertexType("MOVIE");
-        PropertyTypeId movieIdType = g.NewVertexProperty(movieType, "ID", DataType.Long, PropertyKind.Unique);
-        PropertyId movieTitleType = g.NewVertexProperty(movieType, "TITLE", DataType.String, PropertyKind.Indexed);
-        PropertyId movieYearType = g.NewVertexProperty(movieType, "YEAR", DataType.Integer, PropertyKind.Indexed);
+        VertexType movieType = g.NewVertexType("MOVIE");
+        PropertyTypeBase movieIdType = g.NewVertexProperty(movieType, "ID", DataType.Long, PropertyKind.Unique);
+        PropertyTypeBase movieTitleType = g.NewVertexProperty(movieType, "TITLE", DataType.String, PropertyKind.Indexed);
+        PropertyTypeBase movieYearType = g.NewVertexProperty(movieType, "YEAR", DataType.Integer, PropertyKind.Indexed);
 
         // Add a node type for the people, with a unique identifier and an indexed Property
-        VertexTypeId peopleType = g.NewVertexType("PEOPLE");
-        PropertyId peopleIdType = g.NewVertexProperty(peopleType, "ID", DataType.Long, PropertyKind.Unique);
-        PropertyId peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
+        VertexType peopleType = g.NewVertexType("PEOPLE");
+        PropertyTypeBase peopleIdType = g.NewVertexProperty(peopleType, "ID", DataType.Long, PropertyKind.Unique);
+        PropertyTypeBase peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
 
-        // Add an undirected edge type with an Property for the cast of a movie
-        EdgeTypeId castType = g.NewEdgeType("CAST", false, false);
-        PropertyId castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Basic);
+        // Add an undirected edge type with a Property for the cast of a movie
+        EdgeType castType = g.NewEdgeType("CAST", false);
+        PropertyTypeBase castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Indexed);
 
         // Add a directed edge type restricted to go from people to movie for the director of a movie
-        EdgeTypeId directsType = g.NewRestrictedEdgeType("DIRECTS", peopleType, movieType, false);
+        EdgeType directsType = g.NewRestrictedEdgeType("DIRECTS", peopleType, movieType);
 
     // DATA
         // Add some MOVIE nodes
@@ -124,19 +118,19 @@ namespace VelocityGraphSample
 
     // QUERIES
         // Get the movies directed by Woody Allen
-        Vertexes directedByWoody = pWoody.Neighbors(directsType, EdgesDirection.Outgoing);
+        Dictionary<Vertex, HashSet<Edge>> directedByWoody = pWoody.Traverse(directsType, EdgesDirection.Outgoing);
 
         // Get the cast of the movies directed by Woody Allen
-        Vertexes castDirectedByWoody = g.Neighbors(directedByWoody, castType, EdgesDirection.Any);
+        Dictionary<Vertex, HashSet<Edge>> castDirectedByWoody = g.Traverse(directedByWoody, castType, EdgesDirection.Any);
 
         // Get the movies directed by Sofia Coppola
-        Vertexes directedBySofia = pSofia.Neighbors(directsType, EdgesDirection.Outgoing);
+        Dictionary<Vertex, HashSet<Edge>> directedBySofia = pSofia.Traverse(directsType, EdgesDirection.Outgoing);
 
         // Get the cast of the movies directed by Sofia Coppola
-        Vertexes castDirectedBySofia = g.Neighbors(directedBySofia, castType, EdgesDirection.Any);
+        Dictionary<Vertex, HashSet<Edge>> castDirectedBySofia = g.Traverse(directedBySofia, castType, EdgesDirection.Any);
 
         // We want to know the people that acted in movies directed by Woody AND in movies directed by Sofia.
-        IEnumerable<Vertex> castFromBoth = castDirectedByWoody.Intersect(castDirectedBySofia);
+        IEnumerable<Vertex> castFromBoth = castDirectedByWoody.Keys.Intersect(castDirectedBySofia.Keys);
 
         // Say hello to the people found
         foreach (Vertex person in castFromBoth)
@@ -144,6 +138,16 @@ namespace VelocityGraphSample
           object value = person.GetProperty(peopleNameType);
           System.Console.WriteLine("Hello " + value);
         }
+
+        var billM = g.Traverse(directedBySofia, castType, EdgesDirection.Any).Keys.Where(vertex => vertex.GetProperty(peopleNameType).Equals("Bill Murray"));
+
+        // Say hello to Bill Murray
+        foreach (Vertex person in billM)
+        {
+          object value = person.GetProperty(peopleNameType);
+          System.Console.WriteLine("Hello " + value);
+        }
+
         graphId = session.Persist(g);
         session.Commit();
       }
@@ -152,9 +156,9 @@ namespace VelocityGraphSample
       {
         session.BeginRead();
         Graph g = (Graph) session.Open(graphId);
-        VertexTypeId movieType = g.FindVertexType("MOVIE");
-        PropertyId movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
-        Vertex obj = g.FindElement(movieTitleProperty, "Manhattan");
+        VertexType movieType = g.FindVertexType("MOVIE");
+        PropertyTypeBase movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
+        Vertex? obj = g.FindVertex(movieTitleProperty, "Manhattan");
         session.Commit();
       }
     }
