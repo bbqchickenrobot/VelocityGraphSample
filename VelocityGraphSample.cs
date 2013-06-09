@@ -31,18 +31,18 @@ namespace VelocityGraphSample
     // SCHEMA
         // Add a node type for the movies, with a unique identifier and two indexed Propertys
         VertexType movieType = g.NewVertexType("MOVIE");
-        PropertyTypeBase movieIdType = g.NewVertexProperty(movieType, "ID", DataType.Long, PropertyKind.Unique);
-        PropertyTypeBase movieTitleType = g.NewVertexProperty(movieType, "TITLE", DataType.String, PropertyKind.Indexed);
-        PropertyTypeBase movieYearType = g.NewVertexProperty(movieType, "YEAR", DataType.Integer, PropertyKind.Indexed);
+        PropertyType movieIdType = g.NewVertexProperty(movieType, "ID", DataType.Long, PropertyKind.Unique);
+        PropertyType movieTitleType = g.NewVertexProperty(movieType, "TITLE", DataType.String, PropertyKind.Indexed);
+        PropertyType movieYearType = g.NewVertexProperty(movieType, "YEAR", DataType.Integer, PropertyKind.Indexed);
 
         // Add a node type for the people, with a unique identifier and an indexed Property
         VertexType peopleType = g.NewVertexType("PEOPLE");
-        PropertyTypeBase peopleIdType = g.NewVertexProperty(peopleType, "ID", DataType.Long, PropertyKind.Unique);
-        PropertyTypeBase peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
+        PropertyType peopleIdType = g.NewVertexProperty(peopleType, "ID", DataType.Long, PropertyKind.Unique);
+        PropertyType peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
 
         // Add an undirected edge type with a Property for the cast of a movie
         EdgeType castType = g.NewEdgeType("CAST", false);
-        PropertyTypeBase castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Indexed);
+        PropertyType castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Indexed);
 
         // Add a directed edge type restricted to go from people to movie for the director of a movie
         EdgeType directsType = g.NewRestrictedEdgeType("DIRECTS", peopleType, movieType);
@@ -157,7 +157,7 @@ namespace VelocityGraphSample
         session.BeginRead();
         Graph g = (Graph) session.Open(graphId);
         VertexType movieType = g.FindVertexType("MOVIE");
-        PropertyTypeBase movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
+        PropertyType movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
         Vertex? obj = g.FindVertex(movieTitleProperty, "Manhattan");
         session.Commit();
       }
