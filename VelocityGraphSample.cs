@@ -12,6 +12,7 @@ using VelocityGraph;
 
 namespace VelocityGraphSample
 {
+  using Frontenac.Blueprints;
   using System.Collections.Generic;
   class VelocityGraphSample
   {
@@ -118,16 +119,16 @@ namespace VelocityGraphSample
 
     // QUERIES
         // Get the movies directed by Woody Allen
-        Dictionary<Vertex, HashSet<Edge>> directedByWoody = pWoody.Traverse(directsType, EdgesDirection.Outgoing);
+        Dictionary<Vertex, HashSet<Edge>> directedByWoody = pWoody.Traverse(directsType, Direction.Out);
 
         // Get the cast of the movies directed by Woody Allen
-        Dictionary<Vertex, HashSet<Edge>> castDirectedByWoody = g.Traverse(directedByWoody, castType, EdgesDirection.Any);
+        Dictionary<Vertex, HashSet<Edge>> castDirectedByWoody = g.Traverse(directedByWoody, castType, Direction.Both);
 
         // Get the movies directed by Sofia Coppola
-        Dictionary<Vertex, HashSet<Edge>> directedBySofia = pSofia.Traverse(directsType, EdgesDirection.Outgoing);
+        Dictionary<Vertex, HashSet<Edge>> directedBySofia = pSofia.Traverse(directsType, Direction.Out);
 
         // Get the cast of the movies directed by Sofia Coppola
-        Dictionary<Vertex, HashSet<Edge>> castDirectedBySofia = g.Traverse(directedBySofia, castType, EdgesDirection.Any);
+        Dictionary<Vertex, HashSet<Edge>> castDirectedBySofia = g.Traverse(directedBySofia, castType, Direction.Both);
 
         // We want to know the people that acted in movies directed by Woody AND in movies directed by Sofia.
         IEnumerable<Vertex> castFromBoth = castDirectedByWoody.Keys.Intersect(castDirectedBySofia.Keys);
@@ -139,7 +140,7 @@ namespace VelocityGraphSample
           System.Console.WriteLine("Hello " + value);
         }
 
-        var billM = g.Traverse(directedBySofia, castType, EdgesDirection.Any).Keys.Where(vertex => vertex.GetProperty(peopleNameType).Equals("Bill Murray"));
+        var billM = g.Traverse(directedBySofia, castType, Direction.Both).Keys.Where(vertex => vertex.GetProperty(peopleNameType).Equals("Bill Murray"));
 
         // Say hello to Bill Murray
         foreach (Vertex person in billM)
@@ -158,7 +159,7 @@ namespace VelocityGraphSample
         Graph g = (Graph) session.Open(graphId);
         VertexType movieType = g.FindVertexType("MOVIE");
         PropertyType movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
-        Vertex? obj = g.FindVertex(movieTitleProperty, "Manhattan");
+        Vertex obj = g.FindVertex(movieTitleProperty, "Manhattan");
         session.Commit();
       }
     }
