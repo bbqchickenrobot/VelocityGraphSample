@@ -1,6 +1,7 @@
 ﻿// This sample is a preview of VelocityGraph, help us define the best possible graph api! The start of this api is inspired by Dex, see http://www.sparsity-technologies.com/dex.php,
 // the sample here mimics what the dex sample is doing. Dex is considered by some to have the best performing graph api currently available. Unlike Dex, which is a C++/C implemented api,
 // VelocityGraph is all implemented in C# and enable any type of Element values. VelocityGraph is provided as open source on GitHub, https://github.com/VelocityDB/VelocityGraph. 
+// and implements the graph API Blueprints standard interfaces as provided in https://github.com/Loupi/Frontenac
 // Anyone is welcome to contribute! VelocityGraph is built on top of VelocityDB.
 // You will need a VelocityDB license to use VelocityGraph. Eventually VelocityGraph may have its own web site, http://www.VelocityGraph.com/
 
@@ -23,7 +24,7 @@ namespace VelocityGraphSample
     {
       if (Directory.Exists(systemDir))
         Directory.Delete(systemDir, true); // remove systemDir from prior runs and all its databases.
-      UInt64 graphId;
+
       using (SessionNoServer session = new SessionNoServer(systemDir, false))
       {
         session.BeginUpdate();
@@ -32,13 +33,11 @@ namespace VelocityGraphSample
     // SCHEMA
         // Add a node type for the movies, with a unique identifier and two indexed Propertys
         VertexType movieType = g.NewVertexType("MOVIE");
-        PropertyType movieIdType = g.NewVertexProperty(movieType, "ID", DataType.Long, PropertyKind.Unique);
         PropertyType movieTitleType = g.NewVertexProperty(movieType, "TITLE", DataType.String, PropertyKind.Indexed);
         PropertyType movieYearType = g.NewVertexProperty(movieType, "YEAR", DataType.Integer, PropertyKind.Indexed);
 
         // Add a node type for the people, with a unique identifier and an indexed Property
         VertexType peopleType = g.NewVertexType("PEOPLE");
-        PropertyType peopleIdType = g.NewVertexProperty(peopleType, "ID", DataType.Long, PropertyKind.Unique);
         PropertyType peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
 
         // Add an undirected edge type with a Property for the cast of a movie
@@ -46,50 +45,40 @@ namespace VelocityGraphSample
         PropertyType castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Indexed);
 
         // Add a directed edge type restricted to go from people to movie for the director of a movie
-        EdgeType directsType = g.NewRestrictedEdgeType("DIRECTS", peopleType, movieType);
+        EdgeType directsType = g.NewEdgeType("DIRECTS", true, peopleType, movieType);
 
     // DATA
         // Add some MOVIE nodes
 
         Vertex mLostInTranslation = g.NewVertex(movieType);
-        mLostInTranslation.SetProperty(movieIdType, (long)1);
         mLostInTranslation.SetProperty(movieTitleType, "Lost in Translation");
         mLostInTranslation.SetProperty(movieYearType, (int) 2003);
 
         Vertex mVickyCB = g.NewVertex(movieType);
-        mVickyCB.SetProperty(movieIdType, (long) 2);
         mVickyCB.SetProperty(movieTitleType, "Vicky Cristina Barcelona");
         mVickyCB.SetProperty(movieYearType, (int)2008);
 
         Vertex mManhattan = g.NewVertex(movieType);
-        mManhattan.SetProperty(movieIdType, (long) 3);
         mManhattan.SetProperty(movieTitleType, "Manhattan");
         mManhattan.SetProperty(movieYearType, (int) 1979);
 
-
         // Add some PEOPLE nodes
         Vertex pScarlett = g.NewVertex(peopleType);
-        pScarlett.SetProperty(peopleIdType, (long)1);
         pScarlett.SetProperty(peopleNameType, "Scarlett Johansson");
 
         Vertex pBill = g.NewVertex(peopleType);
-        pBill.SetProperty(peopleIdType, (long) 2);
         pBill.SetProperty(peopleNameType, "Bill Murray");
 
         Vertex pSofia = g.NewVertex(peopleType);
-        pSofia.SetProperty(peopleIdType, (long)3);
         pSofia.SetProperty(peopleNameType, "Sofia Coppola");
 
         Vertex pWoody = g.NewVertex(peopleType);
-        pWoody.SetProperty(peopleIdType, (long)4);
         pWoody.SetProperty(peopleNameType, "Woody Allen");
 
         Vertex pPenelope = g.NewVertex(peopleType);
-        pPenelope.SetProperty(peopleIdType, (long) 5);
         pPenelope.SetProperty(peopleNameType, "Penélope Cruz");
 
         Vertex pDiane = g.NewVertex(peopleType);
-        pDiane.SetProperty(peopleIdType, (long)6);
         pDiane.SetProperty(peopleNameType, "Diane Keaton");
 
         // Add some CAST edges
@@ -149,14 +138,14 @@ namespace VelocityGraphSample
           System.Console.WriteLine("Hello " + value);
         }
 
-        graphId = session.Persist(g);
+        session.Persist(g);
         session.Commit();
       }
 
       using (SessionNoServer session = new SessionNoServer(systemDir, false))
       {
         session.BeginRead();
-        Graph g = (Graph) session.Open(graphId);
+        Graph g = Graph.Open(session);
         VertexType movieType = g.FindVertexType("MOVIE");
         PropertyType movieTitleProperty = g.FindVertexProperty(movieType, "TITLE");
         Vertex obj = g.FindVertex(movieTitleProperty, "Manhattan");
