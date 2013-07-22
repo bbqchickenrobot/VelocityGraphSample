@@ -41,7 +41,7 @@ namespace VelocityGraphSample
         PropertyType peopleNameType = g.NewVertexProperty(peopleType, "NAME", DataType.String, PropertyKind.Indexed);
 
         // Add an undirected edge type with a Property for the cast of a movie
-        EdgeType castType = g.NewEdgeType("CAST", false);
+        EdgeType castType = g.NewEdgeType("CAST", true); // should be "true", fix undirectional edges TO DO
         PropertyType castCharacterType = g.NewEdgeProperty(castType, "CHARACTER", DataType.String, PropertyKind.Indexed);
 
         // Add a directed edge type restricted to go from people to movie for the director of a movie
