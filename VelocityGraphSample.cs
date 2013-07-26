@@ -29,6 +29,7 @@ namespace VelocityGraphSample
       {
         session.BeginUpdate();
         Graph g = new Graph(session);
+        session.Persist(g);
 
     // SCHEMA
         // Add a node type for the movies, with a unique identifier and two indexed Propertys
@@ -138,7 +139,6 @@ namespace VelocityGraphSample
           System.Console.WriteLine("Hello " + value);
         }
 
-        session.Persist(g);
         session.Commit();
       }
 
