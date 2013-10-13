@@ -109,13 +109,13 @@ namespace VelocityGraphSample
 
     // QUERIES
         // Get the movies directed by Woody Allen
-        Dictionary<Vertex, HashSet<Edge>> directedByWoody = pWoody.Traverse(directsType, Direction.Out);
+        Dictionary<Vertex, Edge> directedByWoody = pWoody.Traverse(directsType, Direction.Out);
 
         // Get the cast of the movies directed by Woody Allen
         Dictionary<Vertex, HashSet<Edge>> castDirectedByWoody = g.Traverse(directedByWoody, castType, Direction.Both);
 
         // Get the movies directed by Sofia Coppola
-        Dictionary<Vertex, HashSet<Edge>> directedBySofia = pSofia.Traverse(directsType, Direction.Out);
+        Dictionary<Vertex, Edge> directedBySofia = pSofia.Traverse(directsType, Direction.Out);
 
         // Get the cast of the movies directed by Sofia Coppola
         Dictionary<Vertex, HashSet<Edge>> castDirectedBySofia = g.Traverse(directedBySofia, castType, Direction.Both);
